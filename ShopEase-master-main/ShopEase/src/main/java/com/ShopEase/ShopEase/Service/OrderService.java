@@ -2,16 +2,18 @@ package com.ShopEase.ShopEase.Service;
 
 import com.ShopEase.ShopEase.Model.Order;
 import com.ShopEase.ShopEase.DTO.OrderDTO;
+import com.ShopEase.ShopEase.Model.User;
 import com.ShopEase.ShopEase.Repository.OrderRepository;
 import com.ShopEase.ShopEase.Repository.UserRepository;
 import com.ShopEase.ShopEase.Exception.OrderNotFoundException;
-import com.ShopEase.ShopEase.Model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -33,58 +35,47 @@ public class OrderService {
     // Method to create a new order
     public Order createOrder(OrderDTO orderDTO) {
         Order order = new Order();
-
-        // Set the values from DTO
+        order.setOrderDate(orderDTO.getOrderDate());
+        order.setPrice(orderDTO.getPrice());
+        order.setProductName(orderDTO.getProductName());
+        order.setUser(userRepository.findById(orderDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + orderDTO.getUserId())));
         order.setTotalPrice(orderDTO.getTotalPrice());
-
-        // Convert the Date from orderDTO to LocalDate (if it's not null)
-        LocalDate orderDate = orderDTO.getOrderDate() != null ? orderDTO.getOrderDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate() : LocalDate.now();
-
-        order.setOrderDate(orderDate);  // Use the converted LocalDate
-
-        // Find the user by ID
-        User user = userRepository.findById(orderDTO.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
-
-        order.setUser(user);  // Set the user in the order
-
-
-        // Save the order and log the action
-        Order createdOrder = orderRepository.save(order);
-        logger.info("Created new order with ID: {}", createdOrder.getId());
-
-        return createdOrder;
+        return orderRepository.save(order);
     }
+
+
 
     // Method to update an existing order
-    public Order updateOrder(Long orderId, OrderDTO orderDTO) throws OrderNotFoundException {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + orderId));
+    // Update OrderService class method
+    public Order updateOrder(Long id, OrderDTO orderDTO) throws OrderNotFoundException {
+        // Fetch the existing order by ID
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + id));
 
-        // Validate and update total price
-        if (orderDTO.getTotalPrice() < 0) {
-            throw new IllegalArgumentException("Total price cannot be negative.");
+        // Directly use LocalDate from orderDTO
+        LocalDate orderDate = orderDTO.getOrderDate();
+        if (orderDate != null) {
+            order.setOrderDate(orderDate);  // Set the LocalDate directly
         }
 
-        // Convert the Date from orderDTO to LocalDate (if it's not null)
-        LocalDate orderDate = orderDTO.getOrderDate() != null ? orderDTO.getOrderDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate() : LocalDate.now();
-
-        // Update fields from DTO
+        // Update other fields
+        order.setPrice(orderDTO.getPrice());
+        order.setProductName(orderDTO.getProductName());
         order.setTotalPrice(orderDTO.getTotalPrice());
-        order.setOrderDate(orderDate);
 
-        // Persist the updated order
-        Order updatedOrder = orderRepository.save(order);
-        logger.info("Updated order with ID: {}", updatedOrder.getId());
-        return updatedOrder;
+        return orderRepository.save(order); // Save the updated order
     }
 
-    // Method to delete an order
-    public void deleteOrder(Long orderId) throws OrderNotFoundException {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + orderId));
 
-        orderRepository.delete(order);  // Delete the order from the repository
-        logger.info("Deleted order with ID: {}", orderId);
+
+
+    // Method to delete an order
+    public void deleteOrder(Long id) throws OrderNotFoundException {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + id));
+
+        orderRepository.delete(order);  // delete the order from the database
     }
 
     // Method to get an order by its ID

@@ -1,75 +1,87 @@
 package com.ShopEase.ShopEase.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@ToString
+@Table(name = "carts")
 public class Cart {
-    @ManyToMany
-    @JoinTable(
-            name = "cart_products",
-            joinColumns = @JoinColumn(name = "cart_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    private Set<Product> products = new HashSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
-    @ToString.Exclude
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore // Prevents circular references
     private User user;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @ToString.Exclude
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore // Prevents circular references
     private Set<CartItem> cartItems = new HashSet<>();
 
+    // Default constructor
+    public Cart() {}
+
+    // Constructor with User
     public Cart(User user) {
         this.user = user;
     }
 
-    /**
-     * Add a cart item to the cart.
-     */
-    public void addItem(CartItem item) {
-        cartItems.add(item);
-        item.setCart(this);
+    // Getter and Setter for 'id'
+    public Long getId() {
+        return id;
     }
 
-    /**
-     * Remove an item from the cart.
-     */
-    public void removeItem(CartItem item) {
-        cartItems.remove(item);
-        item.setCart(null);
+    // Getter and Setter for 'user'
+    public User getUser() {
+        return user;
     }
 
-    /**
-     * Clear all items from the cart.
-     */
-    public void clear() {
-        cartItems.clear();
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    /**
-     * Calculate the total price of all items in the cart.
-     */
+    // Getter for cartItems as Set (used for data persistence)
+    public Set<CartItem> getCartItemsSet() {
+        return cartItems;
+    }
+
+    // Getter for cartItems as List (for returning data)
+    public List<CartItem> getCartItems() {
+        return cartItems.stream().collect(Collectors.toList());
+    }
+
+    // Setter for 'cartItems'
+    public void setCartItems(Set<CartItem> cartItems) {
+        this.cartItems = cartItems;
+    }
+
+    // Adds a CartItem to the Cart
+    public void addCartItem(CartItem cartItem) {
+        cartItems.add(cartItem);
+        cartItem.setCart(this);  // Ensures the relationship is set correctly
+    }
+
+    // Removes a CartItem from the Cart
+    public void removeCartItem(CartItem cartItem) {
+        cartItems.remove(cartItem);
+        cartItem.setCart(null); // Breaks the relationship before deletion
+    }
+
+    // Calculates the total price of items in the cart
     public BigDecimal calculateTotalPrice() {
         return cartItems.stream()
-                .map(item -> item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public void setId(long l) {
     }
 }

@@ -1,6 +1,9 @@
 package com.ShopEase.ShopEase.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 
 @Entity
 public class OrderItem {
@@ -9,13 +12,18 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
+
+    private String productName;
+    private BigDecimal price;
     private int quantity;
-    private Double totalPrice;
+
+    private BigDecimal totalPrice;
 
     // Relationship with Order: An OrderItem is associated with one Order
-    @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order order;  // Add this field to represent the order to which the item belongs
+    // Add this field to represent the order to which the item belongs
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
@@ -48,11 +56,11 @@ public class OrderItem {
         this.quantity = quantity;
     }
 
-    public Double getTotalPrice() {
+    public BigDecimal getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(Double totalPrice) {
+    public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
     }
 
@@ -62,5 +70,13 @@ public class OrderItem {
 
     public void setProduct(Product product) {
         this.product = product;
+    }
+
+    public void setProductName(String name) {
+        this.productName = name;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 }

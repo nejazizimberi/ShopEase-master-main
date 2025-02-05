@@ -22,15 +22,18 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
-	// Devtools for hot reloading during development
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.mysql:mysql-connector-j'
 	// Database Driver
-	implementation 'mysql:mysql-connector-java' // Replace with your database driver
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// MySQL Connector Java (needed for Spring Data JPA)
+	implementation 'mysql:mysql-connector-java:8.0.33'
 
 	// Lombok for reducing boilerplate code
 	implementation 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// Devtools for hot reloading during development
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	// Testing dependencies
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -38,17 +41,11 @@ dependencies {
 
 	// Optional: Remove unless specifically required
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// Spring Boot Starter Validation (if using validation annotations like @NotNull, etc.)
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
+
 tasks.named('test') {
 	useJUnitPlatform()
-}
-dependencies {
-	implementation 'mysql:mysql-connector-java:8.0.33'
-	implementation('org.springframework.boot:spring-boot-starter-data-jpa') {
-		exclude group: 'mysql', module: 'mysql-connector-java'
-
-		implementation 'org.springframework.boot:spring-boot-starter-validation'
-		// other dependencies
-	}
-
 }

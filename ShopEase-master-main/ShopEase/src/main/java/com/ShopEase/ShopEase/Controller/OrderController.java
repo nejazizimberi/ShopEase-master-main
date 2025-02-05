@@ -40,24 +40,31 @@ public class OrderController {
         }
     }
 
+
     // Create a new order
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody(required = false) OrderDTO orderDTO) {
+    public ResponseEntity<Order> createOrder(@RequestBody OrderDTO orderDTO) {  // Fix the @RequestBody
         if (orderDTO == null) {
             return ResponseEntity.badRequest().body(null);
         }
+        // Pass the orderDTO object, not the class type
         Order order = orderService.createOrder(orderDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 
-
-
     // Update an existing order
     @PutMapping("/{id}")
-    public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody OrderDTO orderDTO) throws OrderNotFoundException {  // Accept OrderDTO
-        Order updatedOrder = orderService.updateOrder(id, orderDTO);  // Pass OrderDTO to the service
-        return ResponseEntity.ok(updatedOrder);
+    public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody OrderDTO orderDTO) {
+        try {
+            // Call the updated service method that accepts id and orderDTO
+            Order updatedOrder = orderService.updateOrder(id, orderDTO);
+            return ResponseEntity.ok(updatedOrder);
+        } catch (OrderNotFoundException ex) {
+            return ResponseEntity.notFound().build();  // Return 404 if the order is not found
+        }
     }
+
+
 
     // Delete an order by id
     @DeleteMapping("/{id}")

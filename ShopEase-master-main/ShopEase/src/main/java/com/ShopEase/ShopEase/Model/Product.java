@@ -1,12 +1,14 @@
 package com.ShopEase.ShopEase.Model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "products")
+@JsonIgnoreProperties(ignoreUnknown = true) // Ignores unknown JSON fields
 public class Product {
 
     @Id
@@ -16,86 +18,46 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String description;
-
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
     @Column(nullable = false)
-    private int stockQuantity;
+    private int stock;
 
-    private String imageUrl;
+    private String description;
 
-    @ManyToMany(mappedBy = "products")  // Update this line to match the field name in the Cart entity
-    private Set<Cart> carts = new HashSet<>();
-
-
-    // Constructors
+    // ✅ Default Constructor (Jackson requires it)
     public Product() {}
 
-    public Product(String name, String description, BigDecimal price, int stockQuantity, String imageUrl) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.stockQuantity = stockQuantity;
-        this.imageUrl = imageUrl;
-    }
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
+    // ✅ Parameterized Constructor (with @JsonProperty for JSON parsing)
+    @JsonCreator
+    public Product(
+            @JsonProperty("id") Long id,
+            @JsonProperty("name") String name,
+            @JsonProperty("price") BigDecimal price,
+            @JsonProperty("stock") int stock,
+            @JsonProperty("description") String description
+    ) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
+        this.price = price;
+        this.stock = stock;
         this.description = description;
     }
 
-    public BigDecimal getPrice() {
-        return price;
-    }
+    // ✅ Getters & Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public int getStockQuantity() {
-        return stockQuantity;
-    }
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
 
-    public void setStockQuantity(int stockQuantity) {
-        this.stockQuantity = stockQuantity;
-    }
+    public int getStock() { return stock; }
+    public void setStock(int stock) { this.stock = stock; }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public Set<Cart> getCarts() {
-        return carts;
-    }
-
-    public void setCarts(Set<Cart> carts) {
-        this.carts = carts;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 }

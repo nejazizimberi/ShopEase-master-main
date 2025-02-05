@@ -1,13 +1,13 @@
 package com.ShopEase.ShopEase.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Table(name = "orders")  // Avoids SQL syntax issues with "order"
+@Table(name = "orders")
 public class Order {
 
     @Id
@@ -17,21 +17,23 @@ public class Order {
     @Column(name = "order_date", nullable = false)
     private LocalDate orderDate;
 
-    @Column(name="price",nullable = false)
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
 
     @Column(name = "product_name", nullable = false)
     private String productName;
 
-    @Column(name = "total_price", nullable = false)
-    private Double totalPrice;
-
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
     private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<OrderItem> orderItems;
+
+    @Column(name = "total_price", nullable = false)
+    private BigDecimal totalPrice;
 
     // Getters and Setters
     public Long getId() {
@@ -66,14 +68,6 @@ public class Order {
         this.productName = productName;
     }
 
-    public Double getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(Double totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
     public User getUser() {
         return user;
     }
@@ -90,16 +84,11 @@ public class Order {
         this.orderItems = orderItems;
     }
 
-    @Override
-    public String toString() {
-        return "Order{" +
-                "id=" + id +
-                ", orderDate=" + orderDate +
-                ", price=" + price +
-                ", productName='" + productName + '\'' +
-                ", totalPrice=" + totalPrice +
-                ", user=" + (user != null ? user.getId() : "null") +
-                ", orderItems=" + (orderItems != null ? orderItems.size() : "0") +
-                '}';
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }

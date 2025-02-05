@@ -1,60 +1,43 @@
 package com.ShopEase.ShopEase.Service;
 
-import com.ShopEase.ShopEase.Exception.ProductNotFoundException;
 import com.ShopEase.ShopEase.Model.Product;
 import com.ShopEase.ShopEase.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
-// Service Interface
-
-
-// Service Implementation
 @Service
-@Transactional
-public class  ProductService {
-
-    private final ProductRepository productRepository;
+public class ProductService {
 
     @Autowired
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
+    private ProductRepository productRepository;
 
-    public Product getProductById(Long productId) throws ProductNotFoundException {
-        return productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + productId));
+    public List<Product> getProductsByIds(List<Long> productIds) {
+        return productRepository.findByIdIn(productIds);
     }
-
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
+    public Optional<Product> getProductById(Long id) {
+        return productRepository.findById(id);
+    }
 
     public Product createProduct(Product product) {
         return productRepository.save(product);
     }
 
-
-    public Product updateProduct(Long id, Product productDetails) throws ProductNotFoundException {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + id));
-
-        product.setName(productDetails.getName());
-        product.setPrice(productDetails.getPrice());
-        // Add other fields to update
-
-        return productRepository.save(product);
+    public Product updateProduct(Long id, Product productDetails) {
+        return productRepository.findById(id).map(product -> {
+            product.setName(productDetails.getName());
+            product.setPrice(productDetails.getPrice());
+            return productRepository.save(product);
+        }).orElseThrow(() -> new RuntimeException("Product not found with id " + id));
     }
 
-    public boolean deleteProduct(Long id) throws ProductNotFoundException {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + id));
-
-        productRepository.delete(product);
-        return false;
+    public void deleteProduct(Long id) {
+        productRepository.deleteById(id);
     }
 }

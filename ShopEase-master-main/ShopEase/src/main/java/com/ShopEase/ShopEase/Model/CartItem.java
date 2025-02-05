@@ -1,55 +1,42 @@
 package com.ShopEase.ShopEase.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import java.math.BigDecimal;
-import java.util.Objects;
 
 @Entity
+@Table(name = "cart_items")
 public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY) // Prevents unnecessary data loading
+    @JsonIgnore // Prevents circular reference during serialization
     @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore// Always load product details
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(nullable = false)
     private int quantity;
 
-    @Column(name = "price_at_addition", nullable = false, precision = 10, scale = 2)
-    private BigDecimal priceAtAddition;
+    // ✅ Default Constructor (Needed for JPA and Jackson)
+    public CartItem() {}
 
-    // Constructors
-    public CartItem() {} // Required by JPA
-
-    public CartItem(Product product, Cart cart, int quantity, BigDecimal priceAtAddition) {
-        this.product = product;
+    // ✅ Constructor for easy object creation
+    public CartItem(Cart cart, Product product, int quantity) {
         this.cart = cart;
+        this.product = product;
         this.quantity = quantity;
-        this.priceAtAddition = priceAtAddition;
     }
 
-    // Getters and Setters
+    // ✅ Getters & Setters
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
     }
 
     public Cart getCart() {
@@ -60,6 +47,14 @@ public class CartItem {
         this.cart = cart;
     }
 
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
     public int getQuantity() {
         return quantity;
     }
@@ -68,37 +63,6 @@ public class CartItem {
         this.quantity = quantity;
     }
 
-    public BigDecimal getPriceAtAddition() {
-        return priceAtAddition;
-    }
-
-    public void setPriceAtAddition(BigDecimal priceAtAddition) {
-        this.priceAtAddition = priceAtAddition;
-    }
-
-    // Equals/HashCode
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CartItem cartItem = (CartItem) o;
-        return Objects.equals(id, cartItem.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    // toString
-    @Override
-    public String toString() {
-        return "CartItem{" +
-                "id=" + id +
-                ", product=" + product.getId() + // Avoid loading entire product
-                ", cart=" + cart.getId() +       // Avoid loading entire cart
-                ", quantity=" + quantity +
-                ", priceAtAddition=" + priceAtAddition +
-                '}';
+    public void setId(long l) {
     }
 }

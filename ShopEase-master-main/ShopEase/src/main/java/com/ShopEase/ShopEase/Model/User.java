@@ -1,5 +1,6 @@
 package com.ShopEase.ShopEase.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -24,12 +25,13 @@ public class User {
 
     // Relationship with Cart: One user has one cart
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-
+    @JsonIgnore
     private Cart cart;
 
     // Relationship with Order: One user can have multiple orders
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Order> orders = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Order> orders = new ArrayList<>(); // Initialize list
 
     // Getter and Setter for Cart
     public Cart getCart() {

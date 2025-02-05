@@ -1,0 +1,54 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.1'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.ShopEase'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(23)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// Spring Boot Starters
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// Devtools for hot reloading during development
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	// Database Driver
+	implementation 'mysql:mysql-connector-java' // Replace with your database driver
+
+	// Lombok for reducing boilerplate code
+	implementation 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// Testing dependencies
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+
+	// Optional: Remove unless specifically required
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+tasks.named('test') {
+	useJUnitPlatform()
+}
+dependencies {
+	implementation 'mysql:mysql-connector-java:8.0.33'
+	implementation('org.springframework.boot:spring-boot-starter-data-jpa') {
+		exclude group: 'mysql', module: 'mysql-connector-java'
+
+		implementation 'org.springframework.boot:spring-boot-starter-validation'
+		// other dependencies
+	}
+
+}

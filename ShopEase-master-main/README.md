@@ -34,3 +34,72 @@ ShopEase is a feature-rich and scalable e-commerce platform built with **Spring 
    ```bash
    git clone https://github.com/your-username/ShopEase.git
    cd ShopEase
+
+2. Configure MySQL Database:
+
+Ensure MySQL is installed and running on your system. 
+Create a new database and update the application.properties file under src/main/resources/ with your database credentials.
+
+spring.datasource.url=jdbc:mysql://localhost:3306/your_database_name
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+spring.jpa.hibernate.ddl-auto=update 
+
+3. Run the Application:
+
+You can run the application using Maven:
+
+bash
+Copy
+Edit
+./mvnw spring-boot:run
+
+4. Access the Application:
+
+Once the application starts, you can access the API endpoints at:
+http://localhost:8080/apirun directly from an IDE (such as IntelliJ or Eclipse).
+
+ ## API Endpoints
+
+1. Cart Item Operations
+   GET /api/cart-items - Get all cart items
+   GET /api/cart-items/{id} - Get cart item by ID
+   POST /api/cart-items - Create a new cart item
+   DELETE /api/cart-items/{id} - Delete a cart item by ID
+2. Cart Operations
+   GET /api/carts - Get all carts
+   GET /api/carts/{id} - Get a cart by ID
+   POST /api/carts - Create a new cart
+3. Product Operations
+   GET /api/products - Get all products
+   GET /api/products/{id} - Get product by ID
+   POST /api/products - Add a new product
+   PUT /api/products/{id} - Update product details
+   DELETE /api/products/{id} - Delete a product
+
+  ## Testing
+
+   Unit tests for the service and controller layers are provided using JUnit and Mockito. To run the tests:
+
+    ./mvnw test
+
+ ## Contributing
+
+We welcome contributions! To contribute to this project:
+
+1. Fork the repository.
+2. Create a new branch (git checkout -b feature-name).
+3. Make your changes and commit  (git commit -am 'Add new feature').
+4. Push to the branch (git push origin feature-name).
+5. Open a pull request.
+
+ ## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgements
+
+- Spring Boot for the excellent framework.
+- MySQL for database management.
+- JUnit and Mockito for unit testing.
+- JWT for authentication.

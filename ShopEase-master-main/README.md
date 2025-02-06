@@ -59,24 +59,6 @@ Edit
 Once the application starts, you can access the API endpoints at:
 http://localhost:8080/apirun directly from an IDE (such as IntelliJ or Eclipse).
 
- ## API Endpoints
-
-1. Cart Item Operations
-   GET /api/cart-items - Get all cart items
-   GET /api/cart-items/{id} - Get cart item by ID
-   POST /api/cart-items - Create a new cart item
-   DELETE /api/cart-items/{id} - Delete a cart item by ID
-2. Cart Operations
-   GET /api/carts - Get all carts
-   GET /api/carts/{id} - Get a cart by ID
-   POST /api/carts - Create a new cart
-3. Product Operations
-   GET /api/products - Get all products
-   GET /api/products/{id} - Get product by ID
-   POST /api/products - Add a new product
-   PUT /api/products/{id} - Update product details
-   DELETE /api/products/{id} - Delete a product
-
   ## Testing
 
    Unit tests for the service and controller layers are provided using JUnit and Mockito. To run the tests:
@@ -96,10 +78,3 @@ We welcome contributions! To contribute to this project:
  ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgements
-
-- Spring Boot for the excellent framework.
-- MySQL for database management.
-- JUnit and Mockito for unit testing.
-- JWT for authentication.
